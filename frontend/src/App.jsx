@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import HomePage from "./pages/HomePage.jsx";
 import WorkerSignupPage from "./pages/WorkerSignupPage.jsx";
 import AiInterviewPage from "./pages/AiInterviewPage.jsx";
@@ -21,15 +22,18 @@ function Placeholder({ title }) {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/worker/signup" element={<WorkerSignupPage />} />
-      <Route path="/worker/interview" element={<AiInterviewPage />} />
-      <Route path="/workers/verified" element={<VerifiedWorkersPage />} />
-      <Route path="/company/browse" element={<CompanyBrowsePage />} />
-      <Route path="/admin" element={<AdminDashboardPage />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/worker/signup" element={<WorkerSignupPage />} />
+        <Route path="/worker/interview" element={<AiInterviewPage />} />
+        <Route path="/workers/verified" element={<VerifiedWorkersPage />} />
+        <Route path="/company/browse" element={<CompanyBrowsePage />} />
+        <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Analytics />
+    </>
   );
 }
 
