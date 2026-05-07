@@ -5,6 +5,9 @@ import AiInterviewPage from "./pages/AiInterviewPage.jsx";
 import VerifiedWorkersPage from "./pages/VerifiedWorkersPage.jsx";
 import CompanyBrowsePage from "./pages/CompanyBrowsePage.jsx";
 import AdminDashboardPage from "./pages/AdminDashboardPage.jsx";
+import CompanySignupPage from "./pages/CompanySignupPage.jsx";
+import CompanyLoginPage from "./pages/CompanyLoginPage.jsx";
+import CompanyDashboardPage from "./pages/CompanyDashboardPage.jsx";
 
 function Placeholder({ title }) {
   return (
@@ -25,6 +28,9 @@ export default function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/worker/signup" element={<WorkerSignupPage />} />
       <Route path="/worker/interview" element={<AiInterviewPage />} />
+      <Route path="/company/signup" element={<CompanySignupPage />} />
+      <Route path="/company/login" element={<CompanyLoginPage />} />
+      <Route path="/company/dashboard" element={<CompanyDashboardPage />} />
       <Route path="/workers/verified" element={<VerifiedWorkersPage />} />
       <Route path="/company/browse" element={<CompanyBrowsePage />} />
       <Route path="/admin" element={<AdminDashboardPage />} />
