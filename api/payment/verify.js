@@ -1,11 +1,6 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+import { supabaseAdmin } from "../_lib/supabaseAdmin.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST")
@@ -31,6 +26,8 @@ export default async function handler(req, res) {
 
   if (expectedSignature !== razorpay_signature)
     return res.status(400).json({ error: "Payment verification failed" });
+
+  const supabase = supabaseAdmin();
 
   const { error } = await supabase.from("contact_unlocks").upsert({
     company_id: company.companyId,

@@ -1,11 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "../_lib/supabaseAdmin.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
 
 export default async function handler(req, res) {
   if (req.method !== "POST")
@@ -15,6 +10,8 @@ export default async function handler(req, res) {
 
   if (!name || !email || !password)
     return res.status(400).json({ error: "Name, email and password required" });
+
+  const supabase = supabaseAdmin();
 
   const { data: existing } = await supabase
     .from("companies")
