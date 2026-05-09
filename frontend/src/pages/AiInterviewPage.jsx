@@ -22,25 +22,30 @@ export default function AiInterviewPage() {
   }, []);
 
   async function loadWorker() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { navigate("/worker/signup"); return; }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { navigate("/worker/signup"); return; }
 
-    const { data: w } = await supabase
-      .from("workers")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+      const { data: w, error: wErr } = await supabase
+        .from("workers")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
-    if (!w) { navigate("/worker/signup"); return; }
+      if (wErr || !w) { navigate("/worker/signup"); return; }
 
-    setWorker(w);
-    const attempts = w.interview_attempts || 0;
-    const left = 2 - attempts;
-    setAttemptsLeft(left);
+      setWorker(w);
+      const attempts = Number(w.interview_attempts) || 0;
+      const left = 2 - attempts;
+      setAttemptsLeft(left);
 
-    if (left <= 0) {
-      setStage("no_attempts");
-    } else {
+      if (left <= 0) {
+        setStage("no_attempts");
+      } else {
+        setStage("intro");
+      }
+    } catch (err) {
+      setError(err.message);
       setStage("intro");
     }
   }
@@ -116,7 +121,7 @@ export default function AiInterviewPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      const newAttempts = (worker.interview_attempts || 0) + 1;
+      const newAttempts = (Number(worker.interview_attempts) || 0) + 1;
       const shouldUpdate = !worker.score || data.score > worker.score;
 
       await supabase.from("workers").update({
@@ -130,6 +135,7 @@ export default function AiInterviewPage() {
       }).eq("id", worker.id);
 
       setResult(data);
+      setAttemptsLeft(prev => prev - 1);
       setStage("result");
     } catch (err) {
       setError(err.message);
@@ -174,7 +180,6 @@ export default function AiInterviewPage() {
           <div className="text-4xl mb-4">🎯</div>
           <h1 className="text-2xl font-bold text-slate-900">AI Skill Interview</h1>
           <p className="mt-2 text-slate-600">Skill: <span className="font-semibold text-slate-900">{worker?.primary_skill}</span></p>
-
           <div className="mt-6 space-y-3">
             <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
               <span className="text-lg">📝</span>
@@ -193,9 +198,7 @@ export default function AiInterviewPage() {
               <p className="text-sm text-amber-700"><span className="font-semibold">{attemptsLeft} attempt{attemptsLeft !== 1 ? "s" : ""} remaining</span> — best score is kept</p>
             </div>
           </div>
-
           {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-
           <button
             onClick={startInterview}
             disabled={loading}
@@ -219,23 +222,19 @@ export default function AiInterviewPage() {
             ⏱️ {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, "0")}
           </span>
         </div>
-
         <div className="w-full bg-slate-100 rounded-full h-2 mb-6">
           <div
             className="bg-slate-900 h-2 rounded-full transition-all"
             style={{ width: `${((currentQ) / questions.length) * 100}%` }}
           />
         </div>
-
         <div className="rounded-2xl border border-slate-200 p-6 mb-4">
           <div className="text-xs font-semibold text-slate-400 uppercase mb-2">
             {currentQ < 8 ? `${worker?.primary_skill} Question` : currentQ === 8 ? "Achievement Question" : "General Knowledge"}
           </div>
           <p className="text-lg font-medium text-slate-900">{questions[currentQ]}</p>
         </div>
-
         {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
-
         <textarea
           value={currentAnswer}
           onChange={e => { setCurrentAnswer(e.target.value); setError(""); }}
@@ -245,7 +244,6 @@ export default function AiInterviewPage() {
           rows={6}
           className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-slate-900 resize-none"
         />
-
         <button
           onClick={() => handleNextQuestion(false)}
           className="mt-4 w-full rounded-xl bg-slate-900 py-3 text-sm font-semibold text-white hover:bg-slate-700"
@@ -278,19 +276,17 @@ export default function AiInterviewPage() {
             {result.badge}
           </div>
           <p className="mt-4 text-slate-600 text-sm">{result.feedback}</p>
-
           <div className="mt-6 p-4 bg-slate-50 rounded-xl text-left">
             <p className="text-xs text-slate-500 font-semibold uppercase">Attempts remaining</p>
-            <p className="text-sm font-medium text-slate-900 mt-1">{attemptsLeft - 1} of 2</p>
+            <p className="text-sm font-medium text-slate-900 mt-1">{attemptsLeft} of 2</p>
           </div>
-
           <div className="mt-4 space-y-3">
-            {attemptsLeft - 1 > 0 && (
+            {attemptsLeft > 0 && (
               <button
-                onClick={() => { setStage("intro"); setAttemptsLeft(prev => prev - 1); }}
+                onClick={() => setStage("intro")}
                 className="w-full rounded-xl border border-slate-200 py-3 text-sm font-semibold text-slate-700"
               >
-                Try Again ({attemptsLeft - 1} attempt left)
+                Try Again ({attemptsLeft} attempt left)
               </button>
             )}
             <button
@@ -304,4 +300,6 @@ export default function AiInterviewPage() {
       </div>
     </div>
   );
+
+  return null;
 }
