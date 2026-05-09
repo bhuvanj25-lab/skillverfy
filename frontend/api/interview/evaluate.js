@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   
     const { skill, questions, answers } = req.body;
   
-    const qa = questions.map((q, i) => 
+    const qa = questions.map((q, i) =>
       `Q${i+1}: ${q}\nA${i+1}: ${answers[i] || "(no answer)"}`
     ).join("\n\n");
   
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   
   Scoring criteria:
   - Technical accuracy (40%)
-  - Depth of knowledge (30%) 
+  - Depth of knowledge (30%)
   - Communication clarity (20%)
   - Problem-solving approach (10%)
   
@@ -26,23 +26,21 @@ export default async function handler(req, res) {
   Badge criteria: 0-59=Unverified, 60-69=Verified, 70-79=Skilled, 80-89=Expert, 90-100=Master`;
   
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.ANTHROPIC_API_KEY,
-          "anthropic-version": "2023-06-01"
-        },
-        body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 500,
-          messages: [{ role: "user", content: prompt }]
-        })
-      });
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }]
+          })
+        }
+      );
   
       const data = await response.json();
-      const text = data.content[0].text.trim();
-      const result = JSON.parse(text);
+      const text = data.candidates[0].content.parts[0].text.trim();
+      const clean = text.replace(/```json|```/g, "").trim();
+      const result = JSON.parse(clean);
       return res.status(200).json(result);
     } catch (err) {
       return res.status(500).json({ error: err.message });
