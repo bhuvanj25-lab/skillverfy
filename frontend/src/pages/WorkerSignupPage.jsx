@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase.js";
 
 const SKILLS = ["Web Development","Python","Data Science","Digital Marketing","UI/UX Design","Content Writing","Sales","Accounting"];
 
 export default function WorkerSignupPage() {
+  const navigate = useNavigate();
   const [step, setStep] = useState("details");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -182,9 +183,12 @@ export default function WorkerSignupPage() {
               <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-800">
                 ✅ Account created successfully!
               </div>
-              <Link to="/" className="block w-full rounded-xl bg-slate-900 py-3 text-center text-sm font-semibold text-white">
-                Back to Home
-              </Link>
+              <button
+                onClick={() => navigate("/worker/interview")}
+                className="w-full rounded-xl bg-slate-900 py-3 text-sm font-semibold text-white hover:bg-slate-700"
+              >
+                Start AI Interview →
+              </button>
             </div>
           )}
         </div>
