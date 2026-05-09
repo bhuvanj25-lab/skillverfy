@@ -46,8 +46,8 @@ export default function WorkerSignupPage() {
     e.preventDefault();
     setError("");
     setInfo("");
-    if (!/^\d{6}$/.test(otp.trim())) {
-      setError("Enter the 6-digit OTP.");
+    if (otp.trim().length < 6) {
+      setError("Enter the OTP code from your email.");
       return;
     }
     setLoading(true);
@@ -153,11 +153,11 @@ export default function WorkerSignupPage() {
 
           {step === "otp" && (
             <form className="mt-6 space-y-4" onSubmit={handleVerifyOtp}>
-              <p className="text-sm text-slate-600">Enter the 6-digit code sent to <strong>{form.email}</strong></p>
+              <p className="text-sm text-slate-600">Enter the code sent to <strong>{form.email}</strong></p>
               <input
                 value={otp}
-                onChange={e => setOtp(e.target.value.replace(/[^\d]/g, "").slice(0, 6))}
-                placeholder="123456"
+                onChange={e => setOtp(e.target.value.replace(/[^\d]/g, "").slice(0, 8))}
+                placeholder="Enter OTP code"
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-slate-900"
               />
               <button
@@ -180,7 +180,7 @@ export default function WorkerSignupPage() {
           {step === "done" && (
             <div className="mt-6 space-y-4">
               <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-800">
-                Account created successfully!
+                ✅ Account created successfully!
               </div>
               <Link to="/" className="block w-full rounded-xl bg-slate-900 py-3 text-center text-sm font-semibold text-white">
                 Back to Home
