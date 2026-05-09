@@ -13,10 +13,8 @@ export default function WorkerSignupPage() {
   const [form, setForm] = useState({
     fullName: "",
     email: "",
-    phone: "",
     primarySkill: "Web Development",
-    yearsExperience: "",
-    portfolioLink: ""
+    yearsExperience: ""
   });
 
   async function handleSendOtp(e) {
@@ -72,10 +70,8 @@ export default function WorkerSignupPage() {
         id: uid,
         full_name: form.fullName.trim(),
         email: form.email.trim().toLowerCase(),
-        phone: form.phone.trim() || null,
         primary_skill: form.primarySkill,
-        years_experience: Number(form.yearsExperience) || 0,
-        portfolio_link: form.portfolioLink.trim() || null
+        years_experience: Number(form.yearsExperience) || 0
       }, { onConflict: "id" });
       if (upsertErr) {
         setError(upsertErr.message);
@@ -127,15 +123,6 @@ export default function WorkerSignupPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Phone (optional)</label>
-                <input
-                  value={form.phone}
-                  onChange={e => setForm(s => ({...s, phone: e.target.value}))}
-                  placeholder="+91..."
-                  className="mt-1 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-slate-900"
-                />
-              </div>
-              <div>
                 <label className="text-sm font-medium">Primary Skill</label>
                 <select
                   value={form.primarySkill}
@@ -151,15 +138,6 @@ export default function WorkerSignupPage() {
                   value={form.yearsExperience}
                   onChange={e => setForm(s => ({...s, yearsExperience: e.target.value}))}
                   placeholder="e.g. 2"
-                  className="mt-1 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-slate-900"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Portfolio Link (optional)</label>
-                <input
-                  value={form.portfolioLink}
-                  onChange={e => setForm(s => ({...s, portfolioLink: e.target.value}))}
-                  placeholder="https://..."
                   className="mt-1 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-slate-900"
                 />
               </div>
